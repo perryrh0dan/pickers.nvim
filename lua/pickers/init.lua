@@ -1,6 +1,5 @@
 local pickers = require "telescope.pickers"
 local finders = require "telescope.finders"
-local previewers = require "telescope.previewers"
 local conf = require("telescope.config").values
 
 local get_default_branch = "git rev-parse --symbolic-full-name refs/remotes/origin/HEAD | sed 's!.*/!!'"
@@ -8,7 +7,7 @@ local base_branch = vim.fn.system(get_default_branch) or "main"
 
 local M = {}
 
-M.open = function()
+M.diff = function()
     local command = "git diff --name-only $(git merge-base HEAD " .. base_branch .. " )"
 
     local handle = io.popen(command)
