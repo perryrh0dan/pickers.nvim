@@ -29,7 +29,7 @@ M.diff = function()
     end
 
     pickers.new({}, {
-        prompt_title = "Git diff",
+        prompt_title = "Git diff between HEAD and " .. string.gsub(base_branch, '\n', ''),
         finder = finders.new_table {
             results = list,
             entry_maker = entry_maker,
