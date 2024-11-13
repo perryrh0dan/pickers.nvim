@@ -9,16 +9,20 @@ local strings = require "plenary.strings"
 local Job = require('plenary.job')
 
 local get_default_branch = "git rev-parse --symbolic-full-name refs/remotes/origin/HEAD | sed 's!.*/!!'"
-local base_branch = vim.fn.system(get_default_branch) or "main"
+local base_branch = "origin/" .. (vim.fn.system(get_default_branch) or "master")
+
+base_branch = base_branch:gsub("[\r\n]", "")
 
 local M = {}
 
 M.diff = function()
     local output_lines = {}
 
+    vim.print("Comparing HEAD against " .. base_branch)
+
     local job = Job:new({
         command = "git",
-        args = { "diff", "--name-only", "master" },
+        args = { "diff", "--name-only", base_branch },
         on_stdout = function(_, line)
             table.insert(output_lines, line)
         end,
