@@ -18,8 +18,6 @@ local M = {}
 M.diff = function()
     local output_lines = {}
 
-    vim.print("Comparing HEAD against " .. base_branch)
-
     local job = Job:new({
         command = "git",
         args = { "diff", "--name-only", base_branch },
@@ -42,6 +40,22 @@ M.diff = function()
     })
 
     job:start()
+end
+
+M.staged = function()
+    local output_lines = {}
+
+    local output = vim.fn.system("git status --porcelain | sed s/^...//")
+
+    for line in output:gmatch("[^\r\n]+") do
+        table.insert(output_lines, line)
+    end
+
+    vim.schedule(
+        function()
+            M.openPicker(output_lines)
+        end
+    )
 end
 
 M.openPicker = function(filePaths)
