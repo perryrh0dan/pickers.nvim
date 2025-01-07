@@ -105,8 +105,13 @@ M.openPicker = function(filePaths)
         title = "Git Diff",
         preview_fn = function(self, entry, status)
             local filepath = entry.value
-            local buf = status.layout.preview.bufnr
-            vim.api.nvim_buf_set_option(buf, 'filetype', 'diff')
+            local buf = status.preview_bufnr
+            if not vim.api.nvim_buf_is_valid(buf) then
+                vim.print("Preview buffer is not valid: " .. buf)
+                return
+            end
+
+            vim.api.nvim_set_option_value('filetype', 'diff', { buf = buf })
 
             local output_lines = {}
 
