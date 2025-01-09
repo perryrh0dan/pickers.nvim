@@ -6,7 +6,8 @@ Different telescope pickers
 
 ```lua
 require('lazy').setup({
-   "perryrh0dan/pickers.nvim'
+    "perryrh0dan/pickers.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
 })
 ```
 
