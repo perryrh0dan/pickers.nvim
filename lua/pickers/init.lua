@@ -8,14 +8,14 @@ local entry_display = require('telescope.pickers.entry_display')
 local strings = require "plenary.strings"
 local Job = require('plenary.job')
 
-local get_default_branch = "git rev-parse --symbolic-full-name refs/remotes/origin/HEAD | sed 's!.*/!!'"
-local base_branch = vim.fn.system("git merge-base HEAD origin/" .. (vim.fn.system(get_default_branch) or "master"))
-
-base_branch = base_branch:gsub("[\r\n]", "")
-
 local M = {}
 
 M.diff = function()
+    local get_default_branch = "git rev-parse --symbolic-full-name refs/remotes/origin/HEAD | sed 's!.*/!!'"
+    local base_branch = vim.fn.system("git merge-base HEAD origin/" .. (vim.fn.system(get_default_branch) or "master"))
+
+    base_branch = base_branch:gsub("[\r\n]", "")
+
     local output_lines = {}
 
     local job = Job:new({
@@ -31,7 +31,7 @@ M.diff = function()
         on_exit = function(_, exit_code, _)
             if exit_code == 0 then
                 vim.schedule(function()
-                    M.openPicker(output_lines)
+                    M.openPicker("Git diff between HEAD and " .. string.gsub(base_branch, '\n', ''), output_lines)
                 end)
             else
                 print('Job failed with exit code:', exit_code)
@@ -53,12 +53,12 @@ M.staged = function()
 
     vim.schedule(
         function()
-            M.openPicker(output_lines)
+            M.openPicker("Staged files", output_lines)
         end
     )
 end
 
-M.openPicker = function(filePaths)
+M.openPicker = function(title, filePaths)
     local icon, _ = utils.get_devicons("fname")
     local icon_width = strings.strdisplaywidth(icon)
 
@@ -138,7 +138,7 @@ M.openPicker = function(filePaths)
     })
 
     pickers.new({}, {
-        prompt_title = "Git diff between HEAD and " .. string.gsub(base_branch, '\n', ''),
+        prompt_title = title,
         finder = finders.new_table {
             results = filePaths,
             entry_maker = entry_maker,
